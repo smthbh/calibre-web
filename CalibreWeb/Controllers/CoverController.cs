@@ -23,20 +23,23 @@ namespace CalibreWeb.Controllers
     public class CoverController : Controller
     {
         private IConfiguration configuration;
+        private readonly ILogger<CoverController> _logger;
 
-        public CoverController(IConfiguration configuration)
+        public CoverController(IConfiguration configuration, ILogger<CoverController> logger)
         {
             this.configuration = configuration;
+            _logger = logger;
         }
 
         [ResponseCache(Duration = 86400)]
         public ActionResult Index(string path)
         {
             path = System.Text.Encoding.Default.GetString(Convert.FromBase64String(path));
-            path = Path.Combine(configuration["Calibre:CataloguePath"], path);
+            path = Path.GetFullPath(Path.Combine(configuration["Calibre:CataloguePath"], path));
+            _logger.LogInformation($"Request for cover full path: {path}", path);
 
             string file = Path.Combine(path, "cover.jpg");
-            if (System.IO.File.Exists(file))
+            if (System.IO.File.Exists(file) && path.StartsWith(configuration["Calibre:CataloguePath"]))
             {
                 var image = System.IO.File.OpenRead(file);
                 return File(image, "image/jpeg");
