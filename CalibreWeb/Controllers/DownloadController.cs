@@ -17,24 +17,30 @@
  */
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace CalibreWeb.Controllers
 {
     public class DownloadController : Controller
     {
         private IConfiguration configuration;
+        private readonly ILogger<DownloadController> _logger;
 
-        public DownloadController(IConfiguration configuration)
+        public DownloadController(IConfiguration configuration, ILogger<DownloadController> logger)
         {
             this.configuration = configuration;
+            _logger = logger;
         }
 
         public IActionResult Index(string path)
         {
             path = System.Text.Encoding.Default.GetString(Convert.FromBase64String(path));
-            path = Path.Combine(configuration["Calibre:CataloguePath"], path);
-            if (System.IO.File.Exists(path))
+            path = Path.GetFullPath(Path.Combine(configuration["Calibre:CataloguePath"], path));
+            _logger.LogInformation($"Request for full path: {path}", path);
+
+            if (System.IO.File.Exists(path) && path.StartsWith(configuration["Calibre:CataloguePath"]))
             {
+                _logger.LogInformation($"Sending file: {path}", path);
                 var image = System.IO.File.OpenRead(path);
                 return File(image, GetMimeType(Path.GetExtension(path)), Path.GetFileName(path));
             }
