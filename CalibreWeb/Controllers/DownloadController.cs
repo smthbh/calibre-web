@@ -36,7 +36,7 @@ namespace CalibreWeb.Controllers
         {
             path = System.Text.Encoding.Default.GetString(Convert.FromBase64String(path));
             path = Path.GetFullPath(Path.Combine(configuration["Calibre:CataloguePath"], path));
-            _logger.LogInformation($"Request for full path: {path}", path);
+            _logger.LogInformation($"Request for book full path: {path}", path);
 
             if (System.IO.File.Exists(path) && path.StartsWith(configuration["Calibre:CataloguePath"]))
             {
