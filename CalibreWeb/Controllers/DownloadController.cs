@@ -58,6 +58,10 @@ namespace CalibreWeb.Controllers
                     return "application/epub+zip";
                 case ".azw3":
                     return "application/x-mobi8-ebook";
+                case ".zip":
+                    return "application/zip";
+                case ".pdf":
+                    return "application/pdf";
             }
             return "binary/octet-stream";
         }
